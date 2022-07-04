@@ -5,6 +5,7 @@
 [docs]: https://docs.rs/ngrok/badge.svg
 
 A minimal and concise [`ngrok`](https://ngrok.com/) wrapper for Rust. The library has many use cases, for example:
+
 - open public HTTP tunnels to your development server(s) for integrations tests
 - simplified networking and development on devices like a Raspberry Pi
 
@@ -22,12 +23,12 @@ ngrok = "0.5.0"
 ## Usage
 
 ```rust
-use ngrok;
+use ngrok_wrapper;
 
 use url::Url;
 
 fn main() -> std::io::Result<()> {
-    let tunnel = ngrok::builder()
+    let tunnel = ngrok_wrapper::builder()
         .http()
         .port(8556)
         .executable("./ngrokclinet.exe")
