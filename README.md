@@ -10,8 +10,7 @@ A minimal and concise [`ngrok`](https://ngrok.com/) wrapper for Rust. The librar
 
 TCP support, while not available, should be trivial to support.
 
-This has been tested with Linux and we assume that it does not work on Windows (contributions
-welcome!).
+Tested on windows ✅
 
 ## Getting Started
 
@@ -25,18 +24,22 @@ ngrok = "0.5.0"
 ```rust
 use ngrok;
 
+use url::Url;
+
 fn main() -> std::io::Result<()> {
     let tunnel = ngrok::builder()
         .http()
-        .port(3030)
+        .port(8556)
+        .executable("./ngrokclinet.exe")
         .run()?;
 
-    let public_url: url::Url = tunnel.http()?;
+    let public_url: &Url = tunnel.http()?;
 
-    println!("Tunnel is open at {:?}", public_url);
+    println!("Tunnel is open at {:?}", public_url.as_str());
 
     Ok(())
 }
+
 ```
 
 This assumes that `ngrok` is on your path. To change this, use the `.executable()` method in the builder when

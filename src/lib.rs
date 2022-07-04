@@ -59,27 +59,25 @@ type Resource = Arc<Mutex<Child>>;
 pub struct Tunnel {
     pub(crate) proc: Resource,
     /// The tunnel's public URL
-    tunnel_http: url::Url,
-    /// The tunnel's public URL
     tunnel_https: url::Url,
 }
 
 impl AsRef<url::Url> for Tunnel {
     fn as_ref(&self) -> &url::Url {
-        &self.tunnel_http
+        &self.tunnel_https
     }
 }
 
 impl fmt::Display for Tunnel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.tunnel_http.fmt(f)
+        self.tunnel_https.fmt(f)
     }
 }
 
 impl Tunnel {
     /// Build a new `ngrok` Tunnel
     pub fn builder() -> Builder {
-        crate::builder()
+        Builder::default()
     }
 
     /// Determine if the underlying child process has exited
@@ -99,7 +97,7 @@ impl Tunnel {
     /// this will return the exit status
     pub fn http(&self) -> Result<&Url, io::Error> {
         self.status()?;
-        Ok(&self.tunnel_http)
+        Ok(&self.tunnel_https)
     }
 
     /// Retrieve the tunnel's https URL. If the underlying process has terminated,
@@ -111,7 +109,7 @@ impl Tunnel {
 
     /// Retrieve the tunnel's http URL.
     pub fn http_unchecked(&self) -> &Url {
-        &self.tunnel_http
+        &self.tunnel_https
     }
 
     /// Retrieve the tunnel's https URL.
@@ -207,7 +205,7 @@ impl Builder {
 
         // ngrok takes a bit to start up and this is a (probably bad) way to wait
         // for the tunnel to appear:
-        let (tunnel_http, tunnel_https) = {
+        let (tunnel_https) = {
             loop {
                 let tunnels = find_tunnels(port);
                 if tunnels.is_ok() {
@@ -225,14 +223,13 @@ impl Builder {
         }?;
 
         Ok(Tunnel {
-            tunnel_http,
             tunnel_https,
             proc: Arc::new(Mutex::new(proc)),
         })
     }
 }
 
-fn find_tunnels(port: u16) -> Result<(url::Url, url::Url), io::Error> {
+fn find_tunnels(port: u16) -> Result<(url::Url), io::Error> {
     use serde_json::Value;
 
     // Retrieve the `tunnel_url`
@@ -273,10 +270,10 @@ fn find_tunnels(port: u16) -> Result<(url::Url, url::Url), io::Error> {
         Err(Error::TunnelNotFound)
     }
 
-    let tunnel_http = find_tunnel_url("http://", port, tunnels)?;
+    // let tunnel_http = find_tunnel_url("http://", port, tunnels)?;
     let tunnel_https = find_tunnel_url("https://", port, tunnels)?;
 
-    Ok((tunnel_http, tunnel_https))
+    Ok(tunnel_https)
 }
 
 #[cfg(test)]

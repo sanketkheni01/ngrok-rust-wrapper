@@ -10,6 +10,13 @@ documentation = "https://docs.rs/ngrok"
 readme = "README.md"
 
 
+[lib]
+name = "ngrok"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ngrok"
+path = "examples/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
