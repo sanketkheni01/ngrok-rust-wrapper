@@ -17,7 +17,7 @@ Tested on windows ✅
 
 ```toml
 [dependencies]
-ngrok = "0.5.0"
+ngrok-wrapper = "0.5.0"
 ```
 
 ## Usage
