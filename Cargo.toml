@@ -1,8 +1,8 @@
 [package]
-name = "ngrok"
+name = "ngrok-wrapper"
 version = "0.5.0"
-authors = ["nkconnor <ngrok@nconnor.com>"]
-edition = "2018"
+authors = ["sanketkheni"]
+edition = "2022"
 license = "MIT OR Apache-2.0"
 description = "A minimal ngrok wrapper"
 repository = "https://github.com/sanketkheni01/ngrok-rust-wrapper"
