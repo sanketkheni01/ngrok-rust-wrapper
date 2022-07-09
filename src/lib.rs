@@ -113,6 +113,8 @@ impl Tunnel {
         &self.tunnel_https
     }
 
+    /// I don't know how to do this better than this.
+    /// I'm sure there is a better way to do this.
     pub fn wait(&self) -> Result<ExitStatus, std::io::Error> {
         let mut proc = self.proc.lock().unwrap();
         let status_code = proc.wait();
