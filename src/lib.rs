@@ -117,10 +117,13 @@ impl Tunnel {
     /// I'm sure there is a better way to do this.
     pub fn wait(&self) -> Result<ExitStatus, std::io::Error> {
         let mut proc = self.proc.lock().unwrap();
-        let status_code = proc.wait();
-        match status_code {
-            Ok(status) => Ok(status),
-            Err(e) => Err(e),
+        let status_code = proc.wait().expect("failed to wait on child");
+        if status_code.success() {
+            Ok(status_code)
+        } else {
+            Err(io::Error::from(Error::TunnelProcessExited(
+                status_code.to_string(),
+            )))
         }
     }
 
