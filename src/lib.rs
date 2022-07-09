@@ -25,6 +25,7 @@
 //! ```
 
 use std::process::Child;
+use std::process::ExitStatus;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::{fmt, io, process::Command, process::Stdio, thread, time::Duration, time::Instant};
@@ -110,6 +111,15 @@ impl Tunnel {
     /// Retrieve the tunnel's http URL.
     pub fn http_unchecked(&self) -> &Url {
         &self.tunnel_https
+    }
+
+    pub fn wait(&self) -> Result<ExitStatus, std::io::Error> {
+        let mut proc = self.proc.lock().unwrap();
+        let status_code = proc.wait();
+        match status_code {
+            Ok(status) => Ok(status),
+            Err(e) => Err(e),
+        }
     }
 
     /// Retrieve the tunnel's https URL.
@@ -205,7 +215,7 @@ impl Builder {
 
         // ngrok takes a bit to start up and this is a (probably bad) way to wait
         // for the tunnel to appear:
-        let (tunnel_https) = {
+        let tunnel_https = {
             loop {
                 let tunnels = find_tunnels(port);
                 if tunnels.is_ok() {
