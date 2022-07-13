@@ -24,6 +24,7 @@
 //! }
 //! ```
 
+use std::os::windows::process::CommandExt;
 use std::process::Child;
 use std::process::ExitStatus;
 use std::sync::Arc;
@@ -52,6 +53,8 @@ impl From<Error> for io::Error {
         io::Error::new(io::ErrorKind::Other, err)
     }
 }
+
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 type Resource = Arc<Mutex<Child>>;
 
@@ -213,6 +216,7 @@ impl Builder {
 
         // Start the `ngrok` process
         let proc = Command::new(self.executable.unwrap_or_else(|| "ngrok".to_string()))
+            .creation_flags(CREATE_NO_WINDOW)
             .stdout(Stdio::piped())
             .arg("http")
             .arg(port.to_string())
