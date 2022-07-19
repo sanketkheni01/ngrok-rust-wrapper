@@ -1,6 +1,6 @@
 [package]
 name = "ngrok-wrapper"
-version = "0.5.5"
+version = "0.5.6"
 authors = ["sanketkheni"]
 edition = "2021"
 license = "MIT OR Apache-2.0"

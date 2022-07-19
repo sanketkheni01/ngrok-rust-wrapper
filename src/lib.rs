@@ -149,6 +149,7 @@ pub struct Builder {
     http: Option<()>,
     port: Option<u16>,
     executable: Option<String>,
+    hidden: bool,
 }
 
 /// The entry point for starting a `ngrok` tunnel. Only HTTP is currently supported.
@@ -180,6 +181,11 @@ impl Builder {
     /// Set the tunnel protocol to HTTP
     pub fn http(&mut self) -> Self {
         self.http = Some(());
+        self.clone()
+    }
+
+    pub fn hidden(&mut self) -> Self {
+        self.hidden = true;
         self.clone()
     }
 
@@ -215,13 +221,20 @@ impl Builder {
         let started_at = Instant::now();
 
         // Start the `ngrok` process
-        let proc = Command::new(self.executable.unwrap_or_else(|| "ngrok".to_string()))
-            .creation_flags(CREATE_NO_WINDOW)
-            .stdout(Stdio::piped())
-            .arg("http")
-            .arg(port.to_string())
-            .spawn()?;
-
+        let proc = if self.hidden {
+            Command::new(self.executable.unwrap_or_else(|| "ngrok".to_string()))
+                .creation_flags(CREATE_NO_WINDOW)
+                .stdout(Stdio::piped())
+                .arg("http")
+                .arg(port.to_string())
+                .spawn()?
+        } else {
+            Command::new(self.executable.unwrap_or_else(|| "ngrok".to_string()))
+                .stdout(Stdio::piped())
+                .arg("http")
+                .arg(port.to_string())
+                .spawn()?
+        };
         // ngrok takes a bit to start up and this is a (probably bad) way to wait
         // for the tunnel to appear:
         let tunnel_https = {
